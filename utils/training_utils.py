@@ -4,6 +4,7 @@ import torch.nn as nn
 import numpy as np
 import itertools
 import inspect
+import random
 
 def set_seed(seed):
     random.seed(seed)

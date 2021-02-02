@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import time
 
-from data_handling import get_data_loader, set_seed
+from data_handling import get_data_loader
 # from model import XXX
 
 import itertools
@@ -13,7 +13,7 @@ import sys
 import logging
 # import wandb
 
-from utils import print_hparams
+from utils import print_hparams, set_seed
 from model import DummyModel
 
 from hparams import hparams as hp
