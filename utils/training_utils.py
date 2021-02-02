@@ -5,6 +5,11 @@ import numpy as np
 import itertools
 import inspect
 
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 def print_hparams(hp):
     attributes = inspect.getmembers(hp, lambda a: not (inspect.isroutine(a)))

@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import time
 
-from data_handling import get_data_loader
+from data_handling import get_data_loader, set_seed
 # from model import XXX
 
 import itertools
@@ -24,8 +24,8 @@ import argparse
 parser = argparse.ArgumentParser(description='hparams for model')
 
 device = torch.device("cuda" if hp.cuda else "cpu")
-np.random.seed(hp.seed)
-torch.manual_seed(hp.seed)
+
+set_seed(hp.seed)
 
 
 def train(training_data):
@@ -49,7 +49,7 @@ def train(training_data):
         optimizer.step()
         total_loss += loss.item()
 
-        writer.add_scalar('Loss/train', loss.item(), (epoch - 1) * len(training_data) + batch)
+        writer.add_scalar('Train/loss', loss.item(), (epoch - 1) * len(training_data) + batch)
 
         batch += 1
 
@@ -73,7 +73,7 @@ def eval(evaluation_data):
             # XXX
 
         loss_mean = XXX
-        writer.add_scalar(f'Loss/eval', loss_mean, epoch)
+        writer.add_scalar(f'Eval/loss', loss_mean, epoch)
         msg = f'eval: {loss_mean:2.4f}'
         logging.info(msg)
 
@@ -93,6 +93,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     for k, v in vars(args).items():
         setattr(hp, k, v)
+
+    # TODO：add https://github.com/PhilJd/contiguous_pytorch_params
 
     model = DummyModel().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=hp.lr, weight_decay=1e-6)
