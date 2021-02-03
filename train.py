@@ -1,25 +1,24 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+# torch.autograd.set_detect_anomaly(True)  # debug
+
 import time
-
-from data_handling import get_data_loader
-# from model import XXX
-
 import itertools
 import numpy as np
 import os
 import sys
 import logging
+import argparse
+from tensorboardX import SummaryWriter
 # import wandb
 
+from data_handling import get_data_loader
+# from model import XXX
 from utils import print_hparams, set_seed
 from model import DummyModel
 
 from hparams import hparams as hp
-from tensorboardX import SummaryWriter
-
-import argparse
 
 parser = argparse.ArgumentParser(description='hparams for model')
 
@@ -97,6 +96,9 @@ if __name__ == '__main__':
     # TODO：add https://github.com/PhilJd/contiguous_pytorch_params
 
     model = DummyModel().to(device)
+    if hp.restore_path:
+        model = torch.load(hp.restore_path)
+        log_dir = os.path.dirname(hp.restore_path)
     optimizer = torch.optim.Adam(model.parameters(), lr=hp.lr, weight_decay=1e-6)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, 0.99)
 
@@ -104,10 +106,6 @@ if __name__ == '__main__':
 
     now_time = str(time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime(time.time())))
     log_dir = 'logs/logs_{model}/{time}'.format(time=now_time, model=args.name if args.name else model.model_type)
-
-    if hp.restore_path:
-        model = torch.load(hp.restore_path)
-        log_dir = os.path.dirname(hp.restore_path)
 
     writer = SummaryWriter(log_dir=log_dir)
 
